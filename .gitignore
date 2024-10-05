@@ -1,0 +1,82 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environment
+venv/
+.env/
+env/
+.venv/
+
+# FastAPI SQLite Database (if used)
+*.db
+*.sqlite3
+
+# Logs
+*.log
+logs/
+
+# PIP dependency files
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints
+
+# Pytest cache
+.pytest_cache/
+
+# Test output
+coverage/
+*.cover
+*.coverage
+*.coverage.*
+
+# MyPy
+.mypy_cache/
+
+# Pyre type checker
+.pyre/
+
+# Caches
+*.cache
+*.pytest_cache
+
+# Editor-specific files (VS Code, PyCharm, etc.)
+.vscode/
+.idea/
+
+# Environment variables file
+.env
+*.env
+
+# Docker-related
+docker-compose.yml
+Dockerfile
+*.dockerignore
+.docker/
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# Static and media files
+staticfiles/
+mediafiles/
+
+# MacOS
+.DS_Store
+
+# pyproject.toml related
+*.lock
+
+# SQLite database
+*.sqlite3
+*.db
+
+# Uvicorn logs
+*.log
+
