@@ -8,10 +8,10 @@ retries = 0
 while retries < max_retries:
     try:
         connect = psycopg2.connect(
-            host='localhost',
+            host='main',
             database='fastapi',
             user='postgres',
-            password='12ab34sd01@',
+            password='frtghfdhfdsh@',
             cursor_factory=RealDictCursor
         )
         cursor = connect.cursor()
