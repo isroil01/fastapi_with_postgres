@@ -25,3 +25,4 @@ while retries < max_retries:
 
 if retries == max_retries:
     print("Max retries reached. Could not connect to the database.")
+    print("Max retries reached. Could not connect to the database.")
