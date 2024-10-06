@@ -1,50 +1,47 @@
-from fastapi import APIRouter,status,HTTPException,Response
-from typing import Optional
-from fastapi.params import Body
-from random import randrange
-from config.database import cursor,connect
-from model.list import Activity
+from fastapi import APIRouter,status,HTTPException,Response,Depends
+from config.database import get_db
+from sqlalchemy.orm import Session
+from model.list import Activities,Activity
+
 
 router  = APIRouter()
 
-# get
-@router.get('/list')
-def get_list():
-    cursor.execute("""SELECT * FROM list """)
-    activities = cursor.fetchall()
-    return {'data':activities}
-
-# post activities
-@router.post('/create',status_code=status.HTTP_201_CREATED)
-def create_activities(activity:Activity):
-    cursor.execute("""INSERT INTO list (title, time, description, type, state) VALUES (%s, %s, %s, %s, %s) RETURNING * """,(activity.title,activity.time,activity.description,activity.type,activity.state))
-    new_post = cursor.fetchone()
-    connect.commit()
-    return {'data':new_post}
-
-# get activity by id
-@router.get('/activity/{id}')
-def get_activity_by_id(id:int):
-    cursor.execute("""SELECT * from list WHERE id = %s """, (str(id)))
-    activity = cursor.fetchone()
-    if not activity:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail='activity not found')
+# new
+@router.get('/get')
+def get_all (db:Session = Depends(get_db)):
+    activity = db.query(Activities).all()
     return {'data':activity}
 
+@router.post('/create',status_code=status.HTTP_201_CREATED)
+def create_activity (post:Activity,db:Session = Depends(get_db)):
+    data = Activities(**post.dict())
+    db.add(data)
+    db.commit()
+    db.refresh(data)
+    return {'data': data}
+
+@router.get('/activity/{id}')
+def get_by_id(id:int,db :Session = Depends(get_db)):
+    activity = db.query(Activities).filter(Activities.id == id).first()
+    if not activity:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail='for the gien id activity not found')
+    return { 'data':activity}
+
 @router.delete('/delete/{id}')
-def delete_activity(id:int):
-    cursor.execute("""DELETE FROM list WHERE id = %s returning *""",(str(id)))
-    deleted_post = cursor.fetchone()
-    connect.commit()
-    if deleted_post == None : 
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail='post does not exist')
+def delete_item(id:int,db:Session = Depends(get_db)):
+    activity = db.query(Activities).filter(Activities.id == id)
+    if activity.first() == None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail='not found')
+    activity.delete(synchronize_session=False)
+    db.commit()
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 @router.put('/update/{id}')
-def update_activity(id:int,post:Activity):
-    cursor.execute("""UPDATE list SET title = %s , description = %s ,time = %s, type = %s,state = %s WHERE id = %s RETURNING *""",(post.title,post.description,post.time,post.type,post.state,str(id)))
-    updated = cursor.fetchall()
-    connect.commit()
-    if updated == None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail='activity does not exist')
-    return {'message': updated}
+def update_activity(id:int,post:Activity,db:Session=Depends(get_db)):
+    act_query = db.query(Activities).filter(Activities.id == id)
+    act = act_query.first()
+    if act == None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail='activity not found for the given id')
+    act_query.update(post.dict(),synchronize_session=False)
+    db.commit()
+    return {'message': act_query.first()}

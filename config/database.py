@@ -1,28 +1,25 @@
 import psycopg2
 from psycopg2.extras import RealDictCursor
 import time
+from sqlalchemy import create_engine
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
 
-max_retries = 5  # Limit to 5 retries
-retries = 0
 
-while retries < max_retries:
+SQLALCHEMY_DATABASE_URL = 'postgresql://user:345345345%40@localhost:5432/fastapi'
+
+engine = create_engine(SQLALCHEMY_DATABASE_URL)
+
+sessionLocal = sessionmaker(autocommit=False,autoflush=False,bind=engine)
+
+Base = declarative_base()
+
+
+# database connection
+def get_db():
+    db = sessionLocal()
     try:
-        connect = psycopg2.connect(
-            host='main',
-            database='fastapi',
-            user='postgres',
-            password='frtghfdhfdsh@',
-            cursor_factory=RealDictCursor
-        )
-        cursor = connect.cursor()
-        print('Database connection is successful')
-        break  # Exit the loop if connection is successful
-    except Exception as error:
-        print('Connection failed')
-        print(error)
-        retries += 1
-        time.sleep(2)
-
-if retries == max_retries:
-    print("Max retries reached. Could not connect to the database.")
-    print("Max retries reached. Could not connect to the database.")
+        yield db
+    finally:
+        db.close()
+        
