@@ -1,12 +1,10 @@
-import psycopg2
-from psycopg2.extras import RealDictCursor
-import time
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
 
-SQLALCHEMY_DATABASE_URL = 'postgresql://user:345345345%40@localhost:5432/fastapi'
+SQLALCHEMY_DATABASE_URL = 'postgresql://new:657567567%40@localhost:we/fastawepi'
+
 
 engine = create_engine(SQLALCHEMY_DATABASE_URL)
 

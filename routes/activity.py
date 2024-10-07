@@ -7,7 +7,7 @@ from model.list import Activities,Activity
 router  = APIRouter()
 
 # new
-@router.get('/get')
+@router.get('/activities')
 def get_all (db:Session = Depends(get_db)):
     activity = db.query(Activities).all()
     return {'data':activity}
