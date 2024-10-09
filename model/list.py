@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 from config.database import Base
-from sqlalchemy import Column,Integer,String
+from sqlalchemy import Column,Integer,String,ForeignKey
 
 class Activity(BaseModel):
     title:str
@@ -8,6 +8,7 @@ class Activity(BaseModel):
     time:str
     type:str
     state:str
+    owner_id:int
     
 class Activities(Base):
     __tablename__ = 'activity'
@@ -18,4 +19,7 @@ class Activities(Base):
     time = Column(String, nullable=False)
     type = Column(String, nullable=False)
     state = Column(String, nullable=False)
+    
+    owner_id = Column(Integer,ForeignKey("users.id",ondelete='CASCADE'),nullable=False)
+    
     
